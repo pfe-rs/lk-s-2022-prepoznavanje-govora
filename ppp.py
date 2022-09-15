@@ -82,7 +82,7 @@ for epoch in range(5):
         optimizer.zero_grad()
         outputs = net(inputs)
         labelice = torch.argmax(outputs, dim=1)
-        loss = criterion(outputs, labels2)
+        loss = criterion(outputs, torch.max(labels2, 1)[1])
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
