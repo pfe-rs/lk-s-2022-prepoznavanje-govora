@@ -60,7 +60,7 @@ l = [path2 + fn for fn in l]
 
 
 dataset = MyDataset(l, target)
-loader = DataLoader(dataset, batch_size=32)
+loader = DataLoader(dataset, batch_size=32,shuffle=True)
 # for batch_ndx, sample in enumerate(loader):
 #     print(sample[0].shape)
 
@@ -69,39 +69,27 @@ fileNames = os.listdir('ZVUKOVI/')
 
 net = Net()
 
-sample = dataset[0][0]
-sample = sample.unsqueeze(0)
-output = net(sample)
-
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001)
 
-
-
-for epoch in range(5):  # loop over the dataset multiple times
-
-    running_loss = 0.0
+for epoch in range(5):
+    sumica = 0
+    acc = 0
+    running_loss = 0
     for i, data in enumerate(loader, 0):
-        # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-
-        # zero the parameter gradients
+        labels2 = F.one_hot(labels % 10).type(torch.float)
         optimizer.zero_grad()
-
-        # forward + backward + optimize
         outputs = net(inputs)
-        loss = criterion(outputs, labels)
+        labelice = torch.argmax(outputs, dim=1)
+        loss = criterion(outputs, labels2)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        if (i % 10 == 0):
-            if not(i==0):
+        sumica = sumica + int(torch.sum(labelice == labels))
+        if(i%10==0):
+            if(i!=0):
                 running_loss/=10
-            print(f"Batch {i}/{int(len(dataset) / 32)}")
-            print(f"Running loss: {running_loss}")
-            running_loss = 0.0
-
-        # print statistics
-        
-    #print(f'[{epoch + 1}] loss: {running_loss}')
-    torch.save(net.state_dict(), f'weights/run1/epoch{epoch+1}.pt')
+            print("loss: ",running_loss)
+            print("acc: ", sumica/((i + 1) * len(labels)))
+            running_loss = 0
