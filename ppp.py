@@ -60,7 +60,7 @@ fileNames = os.listdir('ZVUKOVI/')
 net = Net()
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.005)
+optimizer = optim.SGD(net.parameters(), lr=0.002)
 
 for epoch in range(10):
     sumica = 0
@@ -80,7 +80,9 @@ for epoch in range(10):
         if(i%10==0):
             if(i!=0):
                 running_loss/=10
-            print("loss: ",running_loss)
-            print("acc: ", sumica/((i + 1) * len(labels)))
-            running_loss = 0
+            sourceFile = open('rez.txt', 'w')
+            print(running_loss,sumica/((i + 1) * len(labels)), file=sourceFile)
+            running_loss = 0.0
+    print(epoch+1, file = sourceFile)
+    sourceFile.close()
     torch.save(f'weights/run2/epoch{epoch+1}.pt')
