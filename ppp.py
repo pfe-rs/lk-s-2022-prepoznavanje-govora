@@ -13,16 +13,6 @@ import torch.nn.functional as F
 from projekat_cnn import Net
 import torch.optim as optim
 
-
-def plot_spectrogram(Y, sr, hop_length, y_axis="linear"):
-    plt.figure(figsize=(25, 10))
-    librosa.display.specshow(Y, 
-                             sr=sr, 
-                             hop_length=hop_length, 
-                             x_axis="time", 
-                             y_axis=y_axis)
-    plt.colorbar(format="%+2.f")
-
 class MyDataset(Dataset):
     def __init__(self, data, target, transform=None):
         self.data = data
@@ -70,9 +60,9 @@ fileNames = os.listdir('ZVUKOVI/')
 net = Net()
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001)
+optimizer = optim.SGD(net.parameters(), lr=0.005)
 
-for epoch in range(5):
+for epoch in range(10):
     sumica = 0
     acc = 0
     running_loss = 0
@@ -93,3 +83,4 @@ for epoch in range(5):
             print("loss: ",running_loss)
             print("acc: ", sumica/((i + 1) * len(labels)))
             running_loss = 0
+    torch.save(f'weights/run2/epoch{epoch+1}.pt')
