@@ -12,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from projekat_cnn import Net
 import torch.optim as optim
+from sklearn.model_selection import train_test_split
 
 class MyDataset(Dataset):
     def __init__(self, data, target, transform=None):
@@ -34,38 +35,32 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-path = 'ZVUKOVI/'
 path1 = 'SPEKTROGRAMI/'
 path2 = 'SPEKTROGRAMI CROPPED/'
-# fileNames = os.listdir(path1)
-# for i in fileNames:
-#     img = Image.open(path1+i)
-#     box = (315,122,1861,888)
-#     img2 = img.crop(box)
-#     img2.save('a'+str(i))
 l1 = os.listdir(path1)
 target = [int(x[0]) for x in l1]
 l = os.listdir(path2)
 l = [path2 + fn for fn in l]
 
-
-dataset = MyDataset(l, target)
-loader = DataLoader(dataset, batch_size=32,shuffle=True)
-# for batch_ndx, sample in enumerate(loader):
-#     print(sample[0].shape)
-
-fileNames = os.listdir('ZVUKOVI/')
-
-
 net = Net()
-
+X_train1, X_test, y_train1, y_test = train_test_split(l,target,test_size=0.15,random_state=0)
+X_train, X_val, y_train, y_val =train_test_split(X_train1,y_train1,test_size=0.1765,random_state=0)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.002)
+dataset = MyDataset(X_train, y_train)
+loader = DataLoader(dataset, batch_size=32,shuffle=True)
+dataset1 = MyDataset(X_val, y_val)
+val_loader = DataLoader(dataset1, batch_size=32,shuffle=True)
 
-for epoch in range(10):
-    sumica = 0
-    acc = 0
-    running_loss = 0
+val_accs = []
+val_losses = []
+
+for epoch in range(20):
+    print(epoch+1)
+    acc = 0.0
+    running_loss = 0.0
+
+    net.train()
     for i, data in enumerate(loader, 0):
         inputs, labels = data
         labels2 = F.one_hot(labels % 10).type(torch.float)
@@ -76,13 +71,26 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        sumica = sumica + int(torch.sum(labelice == labels))
-        if(i%10==0):
-            if(i!=0):
-                running_loss/=10
-            sourceFile = open('rez.txt', 'w')
-            print(running_loss,sumica/((i + 1) * len(labels)), file=sourceFile)
-            running_loss = 0.0
-    print(epoch+1, file = sourceFile)
-    sourceFile.close()
-    torch.save(f'weights/run2/epoch{epoch+1}.pt')
+        acc += int(torch.sum(labelice == labels))
+    print("acc:",acc / len(dataset))
+    print("loss:",running_loss / len(dataset))
+
+    running_loss=0.0
+    acc = 0.0
+
+    net.eval()
+    
+    for i, data in enumerate(val_loader, 0):
+        inputs, labels = data
+        labels2 = F.one_hot(labels % 10).type(torch.float)
+        optimizer.zero_grad()
+        outputs = net(inputs)
+        labelice = torch.argmax(outputs, dim=1)
+        loss = criterion(outputs, torch.max(labels2, 1)[1])
+        running_loss += loss.item()
+        acc += int(torch.sum(labelice == labels))
+    print("val_acc: ", acc / len(dataset1))
+    print("val_loss: ", running_loss / len(dataset1))
+    val_accs.append(acc / len(dataset1))
+    val_losses.append(running_loss / len(dataset1))
+    torch.save(net.state_dict(),f'/content/drive/MyDrive/weightsCNN/run4weight{epoch+1}.pth')
