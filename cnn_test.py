@@ -43,7 +43,7 @@ net = Net()
 net.load_state_dict((torch.load('/content/drive/MyDrive/weightsCNN/run4weight20.pth')))
 net=net.cuda()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.01)
+optimizer = optim.SGD(net.parameters(), lr=0.001)
 
 X_train1, X_test, y_train1, y_test = train_test_split(l,target,test_size=0.15,random_state=0)
 X_train, X_val, y_train, y_val =train_test_split(X_train1,y_train1,test_size=0.1765,random_state=0)
