@@ -1,15 +1,13 @@
 import os
-import scipy.io 
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import librosa
 import librosa.display
-from scipy.io import wavfile
 from sklearn.model_selection import train_test_split
-from sklearn import svm, datasets
-from sklearn import metrics
+from sklearn import svm
 from sklearn.metrics import confusion_matrix
+
 FOLDER_PATH = 'ZVUKOVI/'
 fileNames = os.listdir(FOLDER_PATH)
 labele = []

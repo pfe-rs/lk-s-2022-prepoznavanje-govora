@@ -1,16 +1,13 @@
 import os
-import scipy.io 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import hmmlearn
-from hmmlearn.hmm import GaussianHMM
 import librosa
 import librosa.display
-from scipy.io import wavfile
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+
 FOLDER_PATH = 'ZVUKOVI/'
 fileNames = os.listdir(FOLDER_PATH)
 labele = []

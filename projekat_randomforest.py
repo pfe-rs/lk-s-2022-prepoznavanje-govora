@@ -1,19 +1,10 @@
 import os
-import scipy.io 
-import pandas as pd
-import xgboost as xgb
-from xgboost import XGBClassifier, plot_tree
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import mean_squared_error
-import matplotlib.pyplot as plt
-from sklearn.tree import export_graphviz
 import numpy as np
 import librosa
 import librosa.display
-from scipy.io import wavfile
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix
+
 FOLDER_PATH = 'ZVUKOVI/'
 fileNames = os.listdir(FOLDER_PATH)
 labele = []

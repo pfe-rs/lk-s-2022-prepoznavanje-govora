@@ -1,9 +1,6 @@
 import os
-import matplotlib.pyplot as plt
 from PIL import Image
 import os.path
-import librosa
-import librosa.display
 from torchvision import transforms
 from torch.utils.data import Dataset
 import torch
