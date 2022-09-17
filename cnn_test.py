@@ -32,6 +32,8 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
+
+
 path1 = 'SPEKTROGRAMI/'
 path2 = 'SPEKTROGRAMI CROPPED/'
 l1 = os.listdir(path1)
